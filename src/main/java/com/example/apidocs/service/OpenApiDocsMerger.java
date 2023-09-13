@@ -3,9 +3,9 @@ package com.example.apidocs.service;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 
-public class OpenApiDocsCustomizer {
+public class OpenApiDocsMerger {
 
-    private OpenApiDocsCustomizer() {
+    private OpenApiDocsMerger() {
         throw new IllegalStateException("Utility class");
     }
 

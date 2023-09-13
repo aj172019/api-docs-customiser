@@ -1,6 +1,6 @@
 package com.example.apidocs.controller;
 
-import com.example.apidocs.service.OpenApiService;
+import com.example.apidocs.service.OpenApiDocsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class OpenApiController {
 
-    private final OpenApiService openApiService;
+    private final OpenApiDocsService openApiDocsService;
 
-    public OpenApiController(OpenApiService openApiService) {
-        this.openApiService = openApiService;
+    public OpenApiController(OpenApiDocsService openApiDocsService) {
+        this.openApiDocsService = openApiDocsService;
     }
 
     @GetMapping("/openapi.json")
     public ResponseEntity<String> getMergedOpenApi() throws JsonProcessingException {
-        return ResponseEntity.ok(openApiService.getServicesOpenApiDocs());
+        return ResponseEntity.ok(openApiDocsService.getServicesOpenApiDocs());
     }
 }

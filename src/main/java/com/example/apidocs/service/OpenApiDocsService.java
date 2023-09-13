@@ -16,14 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class OpenApiService {
+public class OpenApiDocsService {
 
     private final MsaProperties msaProperties;
 
     private final OpenApiDocsFetcher openApiDocsFetcher;
     private final ApplicationContext applicationContext;
 
-    public OpenApiService(MsaProperties msaProperties, OpenApiDocsFetcher openApiDocsFetcher, ApplicationContext applicationContext) {
+    public OpenApiDocsService(MsaProperties msaProperties, OpenApiDocsFetcher openApiDocsFetcher, ApplicationContext applicationContext) {
         this.msaProperties = msaProperties;
         this.openApiDocsFetcher = openApiDocsFetcher;
         this.applicationContext = applicationContext;
@@ -41,7 +41,7 @@ public class OpenApiService {
                     OpenApiDocsValidator validator = applicationContext.getBean(domain.getValidator());
                     validator.validate(source);
                 }
-                target = OpenApiDocsCustomizer.merge(target, source);
+                target = OpenApiDocsMerger.merge(target, source);
             } catch (Exception e) {
                 if (e instanceof OpenApiDocsNetworkException) {
                     errorInfo.message(getFormatted(domain, e));
