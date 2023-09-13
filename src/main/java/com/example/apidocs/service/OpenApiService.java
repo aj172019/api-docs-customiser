@@ -2,13 +2,14 @@ package com.example.apidocs.service;
 
 import com.example.apidocs.config.MsaProperties;
 import com.example.apidocs.config.MsaProperties.Domain;
-import com.example.apidocs.constant.ErrorType;
-import com.example.apidocs.exception.MissingServerPropertyException;
+import com.example.apidocs.exception.OpenApiValidationException;
 import com.example.apidocs.exception.OpenApiDocsNetworkException;
 import com.example.apidocs.model.ErrorInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,10 +21,12 @@ public class OpenApiService {
     private final MsaProperties msaProperties;
 
     private final OpenApiDocsFetcher openApiDocsFetcher;
+    private final ApplicationContext applicationContext;
 
-    public OpenApiService(MsaProperties msaProperties, OpenApiDocsFetcher openApiDocsFetcher) {
+    public OpenApiService(MsaProperties msaProperties, OpenApiDocsFetcher openApiDocsFetcher, ApplicationContext applicationContext) {
         this.msaProperties = msaProperties;
         this.openApiDocsFetcher = openApiDocsFetcher;
+        this.applicationContext = applicationContext;
     }
 
     public String getServicesOpenApiDocs() throws JsonProcessingException {
@@ -34,13 +37,17 @@ public class OpenApiService {
             try {
                 String openApiSpecYaml = openApiDocsFetcher.fetchOpenApiYaml(domain);
                 OpenAPI source = OpenApiDocsParser.parse(openApiSpecYaml);
+                if (msaProperties.isValidate()) {
+                    OpenApiDocsValidator validator = applicationContext.getBean(domain.getValidator());
+                    validator.validate(source);
+                }
                 target = OpenApiDocsCustomizer.merge(target, source);
             } catch (Exception e) {
                 if (e instanceof OpenApiDocsNetworkException) {
-                    errorInfo.add(ErrorType.NETWORK_ERROR);
+                    errorInfo.message(getFormatted(domain, e));
                 }
-                if (e instanceof MissingServerPropertyException) {
-                    errorInfo.add(ErrorType.MISSING_SERVER_PROPERTY);
+                if (e instanceof OpenApiValidationException) {
+                    errorInfo.message(getFormatted(domain, e));
                 }
                 e.printStackTrace();
             }
@@ -50,6 +57,10 @@ public class OpenApiService {
         target.info(renderInformation(errorInfos));
 
         return OpenApiDocsJsonConverter.convertOpenApiToJson(target);
+    }
+
+    private static String getFormatted(Domain domain, Exception e) {
+        return "**Error!!!**<br/><br/>**Domain**:`%s`<br/><br/>**Host**:`%s`<br/><br/>**Message**: %s".formatted(domain.getName(), domain.getHost(), e.getMessage());
     }
 
     private static Info renderInformation(List<ErrorInfo> errorInfos) {
@@ -64,8 +75,8 @@ public class OpenApiService {
         for (ErrorInfo errorInfo : errorInfos) {
             if (errorInfo != null) { // Ensure errorInfo is not null
                 String server = errorInfo.getDomain().getName(); // Assuming there's a getter for domain in ErrorInfo
-                String status = errorInfo.getErrorList().isEmpty() ? "☀️" : "⛈️";
-                String remark = String.join("<br/>",errorInfo.getErrorList().stream().map(ErrorType::getMessage).toList());
+                String status = StringUtils.isEmpty(errorInfo.getMessage()) ? "☀️" : "⛈️";
+                String remark = errorInfo.getMessage();
                 row.row(server, status, remark);
             }
         }

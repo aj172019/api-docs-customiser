@@ -19,7 +19,7 @@ public class OpenApiDocsFetcher {
         try {
             return restTemplate.getForObject(endpoint, String.class);
         } catch (Exception e) {
-            throw new OpenApiDocsNetworkException("Failed to fetch OpenAPI YAML from " + endpoint, e);
+            throw new OpenApiDocsNetworkException("Failed to fetch OpenAPI YAML", e);
         }
     }
 }

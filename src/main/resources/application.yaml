@@ -9,11 +9,15 @@ msa:
       host: localhost:8080
       https: false
       api-docs-path: /rest-controller.yaml
+      validator: com.example.apidocs.service.OpenApiDocsNoneValidator
     - name: delivery
       host: localhost:8080
       https: false
       api-docs-path: /dely/rest-controller.yaml
+      validator: com.example.apidocs.service.OpenApiDocsDefaultValidator
     - name: product
       host: localhost:8080
       https: false
       api-docs-path: /feign-client.yaml
+      validator: com.example.apidocs.service.OpenApiDocsDefaultValidator
+  validate: true

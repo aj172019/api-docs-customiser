@@ -1,5 +1,8 @@
 package com.example.apidocs.config;
 
+import com.example.apidocs.service.OpenApiDocsDefaultValidator;
+import com.example.apidocs.service.OpenApiDocsNoneValidator;
+import com.example.apidocs.service.OpenApiDocsValidator;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -14,6 +17,7 @@ import java.util.List;
 public class MsaProperties {
 
     private List<Domain> domains;
+    private boolean isValidate = false;
 
     @Getter
     @Setter
@@ -22,5 +26,6 @@ public class MsaProperties {
         private String host;
         private boolean isHttps = false;
         private String apiDocsPath;
+        private Class<? extends OpenApiDocsValidator> validator = OpenApiDocsDefaultValidator.class;
     }
 }
