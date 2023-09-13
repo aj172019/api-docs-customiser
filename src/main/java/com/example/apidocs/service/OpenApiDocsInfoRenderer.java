@@ -35,7 +35,7 @@ public class OpenApiDocsInfoRenderer {
     }
 
     public OpenApiDocsInfoRenderer append(String content) {
-        descriptionBuilder.append(content).append("%n");
+        descriptionBuilder.append(content).append("\n");
         return this;
     }
 
@@ -84,9 +84,13 @@ public class OpenApiDocsInfoRenderer {
             this.table = table;
         }
 
+        public OpenApiDocsInfoTableRow row() {
+            return new OpenApiDocsInfoTableRow(table);
+        }
+
         public OpenApiDocsInfoTableRow row(String... columns) {
             table.addRow(columns);
-            return new OpenApiDocsInfoTableRow(table);
+            return row();
         }
     }
 

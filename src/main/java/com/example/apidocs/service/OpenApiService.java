@@ -8,6 +8,7 @@ import com.example.apidocs.exception.OpenApiDocsNetworkException;
 import com.example.apidocs.model.ErrorInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,13 +30,12 @@ public class OpenApiService {
         OpenAPI target = new OpenAPI();
         List<ErrorInfo> errorInfos = new ArrayList<>();
         for (Domain domain : msaProperties.getDomains()) {
-            ErrorInfo errorInfo = null;
+            ErrorInfo errorInfo = ErrorInfo.createErrorInfo(domain);
             try {
                 String openApiSpecYaml = openApiDocsFetcher.fetchOpenApiYaml(domain);
                 OpenAPI source = OpenApiDocsParser.parse(openApiSpecYaml);
                 target = OpenApiDocsCustomizer.merge(target, source);
             } catch (Exception e) {
-                errorInfo = ErrorInfo.createErrorInfo(domain);
                 if (e instanceof OpenApiDocsNetworkException) {
                     errorInfo.add(ErrorType.NETWORK_ERROR);
                 }
@@ -47,6 +47,12 @@ public class OpenApiService {
             errorInfos.add(errorInfo);
         }
 
+        target.info(renderInformation(errorInfos));
+
+        return OpenApiDocsJsonConverter.convertOpenApiToJson(target);
+    }
+
+    private static Info renderInformation(List<ErrorInfo> errorInfos) {
         OpenApiDocsInfoRenderer.OpenApiDocsInfoTableHeader renderer = OpenApiDocsInfoRenderer.create()
                 .title("Megazone Play API Documentation")
                 .append("### Megazone Play Servers Status")
@@ -59,17 +65,12 @@ public class OpenApiService {
             if (errorInfo != null) { // Ensure errorInfo is not null
                 String server = errorInfo.getDomain().getName(); // Assuming there's a getter for domain in ErrorInfo
                 String status = errorInfo.getErrorList().isEmpty() ? "☀️" : "⛈️";
-                StringBuilder remark = new StringBuilder();
-                for (ErrorType errorType : errorInfo.getErrorList()) {
-                    remark.append(errorType.getMessage()).append("%n"); // Assuming there's a method to get the message from ErrorType
-                }
-                row = renderer.row(server, status, remark.toString());
+                String remark = String.join("<br/>",errorInfo.getErrorList().stream().map(ErrorType::getMessage).toList());
+                row.row(server, status, remark);
             }
         }
 
         // End table creation and other configurations
-        row.endTable().build();
-
-        return OpenApiDocsJsonConverter.convertOpenApiToJson(target);
+        return row.endTable().build();
     }
 }
