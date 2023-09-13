@@ -17,6 +17,6 @@ public class OpenApiController {
 
     @GetMapping("/openapi.json")
     public ResponseEntity<String> getMergedOpenApi() throws JsonProcessingException {
-        return ResponseEntity.ok(openApiService.getMergedOpenApi());
+        return ResponseEntity.ok(openApiService.getServicesOpenApiDocs());
     }
 }
