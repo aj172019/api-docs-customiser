@@ -1,4 +1,4 @@
-package com.example.apidocs.service;
+package com.example.apidocs.service.validator;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import org.springframework.stereotype.Service;

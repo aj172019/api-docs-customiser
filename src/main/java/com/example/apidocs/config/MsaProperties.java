@@ -1,7 +1,7 @@
 package com.example.apidocs.config;
 
-import com.example.apidocs.service.OpenApiDocsDefaultValidator;
-import com.example.apidocs.service.OpenApiDocsValidator;
+import com.example.apidocs.service.validator.OpenApiDocsDefaultValidator;
+import com.example.apidocs.service.validator.OpenApiDocsValidator;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;

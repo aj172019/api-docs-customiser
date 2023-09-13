@@ -5,11 +5,12 @@ import com.example.apidocs.config.MsaProperties.Domain;
 import com.example.apidocs.exception.OpenApiDocsNetworkException;
 import com.example.apidocs.exception.OpenApiValidationException;
 import com.example.apidocs.model.ErrorInfo;
+import com.example.apidocs.service.validator.OpenApiDocsValidator;
+import com.example.apidocs.service.validator.OpenApiDocsValidatorFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,12 +22,13 @@ public class OpenApiDocsService {
     private final MsaProperties msaProperties;
 
     private final OpenApiDocsFetcher openApiDocsFetcher;
-    private final ApplicationContext applicationContext;
+    
+    private final OpenApiDocsValidatorFactory openApiDocsValidatorFactory;
 
-    public OpenApiDocsService(MsaProperties msaProperties, OpenApiDocsFetcher openApiDocsFetcher, ApplicationContext applicationContext) {
+    public OpenApiDocsService(MsaProperties msaProperties, OpenApiDocsFetcher openApiDocsFetcher, OpenApiDocsValidatorFactory openApiDocsValidatorFactory) {
         this.msaProperties = msaProperties;
         this.openApiDocsFetcher = openApiDocsFetcher;
-        this.applicationContext = applicationContext;
+        this.openApiDocsValidatorFactory = openApiDocsValidatorFactory;
     }
 
     public String getServicesOpenApiDocs() throws JsonProcessingException {
@@ -35,11 +37,9 @@ public class OpenApiDocsService {
         for (Domain domain : msaProperties.getDomains()) {
             ErrorInfo errorInfo = ErrorInfo.createErrorInfo(domain);
             try {
-                String openApiSpecYaml = openApiDocsFetcher.fetchOpenApiYaml(domain);
-                OpenAPI source = OpenApiDocsParser.parse(openApiSpecYaml);
+                OpenAPI source = fetchAndParseOpenApiSpec(domain);
                 if (msaProperties.isValidate()) {
-                    OpenApiDocsValidator validator = applicationContext.getBean(domain.getValidator());
-                    validator.validate(source);
+                    validateOpenApiSpec(domain, source);
                 }
                 target = OpenApiDocsMerger.merge(target, source);
             } catch (Exception e) {
@@ -59,6 +59,17 @@ public class OpenApiDocsService {
         return OpenApiDocsJsonConverter.convertOpenApiToJson(target);
     }
 
+    private OpenAPI fetchAndParseOpenApiSpec(Domain domain) {
+        String openApiSpecYaml = openApiDocsFetcher.fetchOpenApiYaml(domain);
+        OpenAPI source = OpenApiDocsParser.parse(openApiSpecYaml);
+        return source;
+    }
+
+    private void validateOpenApiSpec(Domain domain, OpenAPI source) {
+        OpenApiDocsValidator validator = openApiDocsValidatorFactory.getValidator(domain.getValidator());
+        validator.validate(source);
+    }
+
     private static String getFormatted(Domain domain, Exception e) {
         return "**Error!!!**<br/><br/>**Domain**:`%s`<br/><br/>**Host**:`%s`<br/><br/>**Message**: %s".formatted(domain.getName(), domain.getHost(), e.getMessage());
     }
@@ -70,7 +81,7 @@ public class OpenApiDocsService {
         // End table creation and other configurations
         return OpenApiDocsInfoRenderer.create()
                 .title("Megazone Play API Documentation")
-                .append("### Megazone Play Servers Status")
+                .append("### Megazone Play Server & Docs Status")
                 .table()
                 .header("Server", "Status", "Remark")
                 .rows(rows)
