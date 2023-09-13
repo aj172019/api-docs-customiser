@@ -4,7 +4,6 @@ import com.example.apidocs.exception.OpenApiValidationException;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.servers.Server;
-import org.springframework.context.annotation.Configuration;
 
 import java.util.Map;
 

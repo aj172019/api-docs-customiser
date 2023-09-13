@@ -2,8 +2,8 @@ package com.example.apidocs.service;
 
 import com.example.apidocs.config.MsaProperties;
 import com.example.apidocs.config.MsaProperties.Domain;
-import com.example.apidocs.exception.OpenApiValidationException;
 import com.example.apidocs.exception.OpenApiDocsNetworkException;
+import com.example.apidocs.exception.OpenApiValidationException;
 import com.example.apidocs.model.ErrorInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -64,24 +64,17 @@ public class OpenApiService {
     }
 
     private static Info renderInformation(List<ErrorInfo> errorInfos) {
-        OpenApiDocsInfoRenderer.OpenApiDocsInfoTableHeader renderer = OpenApiDocsInfoRenderer.create()
+        // errorInfos to List<String[]>
+        List<String[]> rows = errorInfos.stream().map(errorInfo -> new String[]{errorInfo.getDomain().getName(), StringUtils.isEmpty(errorInfo.getMessage()) ? "☀️" : "⛈️", errorInfo.getMessage()}).toList();
+
+        // End table creation and other configurations
+        return OpenApiDocsInfoRenderer.create()
                 .title("Megazone Play API Documentation")
                 .append("### Megazone Play Servers Status")
                 .table()
-                .header("Server", "Status", "Remark");
-
-        OpenApiDocsInfoRenderer.OpenApiDocsInfoTableRow row = renderer.row();
-        // Iterate over errorInfos to add rows to the table
-        for (ErrorInfo errorInfo : errorInfos) {
-            if (errorInfo != null) { // Ensure errorInfo is not null
-                String server = errorInfo.getDomain().getName(); // Assuming there's a getter for domain in ErrorInfo
-                String status = StringUtils.isEmpty(errorInfo.getMessage()) ? "☀️" : "⛈️";
-                String remark = errorInfo.getMessage();
-                row.row(server, status, remark);
-            }
-        }
-
-        // End table creation and other configurations
-        return row.endTable().build();
+                .header("Server", "Status", "Remark")
+                .rows(rows)
+                .endTable()
+                .build();
     }
 }

@@ -89,7 +89,21 @@ public class OpenApiDocsInfoRenderer {
         }
 
         public OpenApiDocsInfoTableRow row(String... columns) {
+            if (columns.length != table.headers.size()) {
+                throw new IllegalArgumentException("Number of columns must match number of headers");
+            }
             table.addRow(columns);
+            return row();
+        }
+
+
+        public final OpenApiDocsInfoTableRow rows(List<String[]> rows) {
+            for (String[] row : rows) {
+                if (row.length != table.headers.size()) {
+                    throw new IllegalArgumentException("Number of columns must match number of headers");
+                }
+                row(row);
+            }
             return row();
         }
     }
@@ -102,6 +116,9 @@ public class OpenApiDocsInfoRenderer {
         }
 
         public OpenApiDocsInfoTableRow row(String... columns) {
+            if (columns.length != table.headers.size()) {
+                throw new IllegalArgumentException("Number of columns must match number of headers");
+            }
             table.addRow(columns);
             return this;
         }

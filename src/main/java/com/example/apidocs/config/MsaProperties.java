@@ -1,7 +1,6 @@
 package com.example.apidocs.config;
 
 import com.example.apidocs.service.OpenApiDocsDefaultValidator;
-import com.example.apidocs.service.OpenApiDocsNoneValidator;
 import com.example.apidocs.service.OpenApiDocsValidator;
 import lombok.Getter;
 import lombok.Setter;
