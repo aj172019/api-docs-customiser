@@ -1,4 +1,4 @@
-package com.example.apidocs.service;
+package com.example.apidocs.openapi.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;

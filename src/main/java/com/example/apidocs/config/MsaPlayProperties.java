@@ -1,7 +1,7 @@
 package com.example.apidocs.config;
 
-import com.example.apidocs.service.validator.OpenApiDocsDefaultValidator;
-import com.example.apidocs.service.validator.OpenApiDocsValidator;
+import com.example.apidocs.openapi.service.validator.OpenApiDocsDefaultValidator;
+import com.example.apidocs.openapi.service.validator.OpenApiDocsValidator;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -12,8 +12,8 @@ import java.util.List;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties(prefix = "msa")
-public class MsaProperties {
+@ConfigurationProperties(prefix = "msa-play")
+public class MsaPlayProperties {
 
     private List<Domain> domains;
     private boolean isValidate = false;

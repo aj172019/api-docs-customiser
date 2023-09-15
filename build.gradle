@@ -32,6 +32,15 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // h2
+    implementation 'com.h2database:h2'
+    // jpa
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    // thymeleaf
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 }
 
 tasks.named('test') {

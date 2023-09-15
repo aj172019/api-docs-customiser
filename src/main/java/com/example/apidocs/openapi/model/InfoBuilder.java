@@ -1,26 +1,27 @@
-package com.example.apidocs.service;
+package com.example.apidocs.openapi.model;
 
+import com.example.apidocs.openapi.exception.MismatchedColumnCountException;
 import io.swagger.v3.oas.models.info.Info;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class OpenApiDocsInfoRenderer {
+public class InfoBuilder {
 
     private final Info info;
     private final StringBuilder descriptionBuilder;
 
-    private OpenApiDocsInfoRenderer() {
+    private InfoBuilder() {
         this.info = new Info();
         this.descriptionBuilder = new StringBuilder();
     }
 
-    public static OpenApiDocsInfoRenderer create() {
-        return new OpenApiDocsInfoRenderer();
+    public static InfoBuilder builder() {
+        return new InfoBuilder();
     }
 
-    public OpenApiDocsInfoRenderer title(String title) {
+    public InfoBuilder title(String title) {
         info.setTitle(title);
         return this;
     }
@@ -34,17 +35,17 @@ public class OpenApiDocsInfoRenderer {
         return info;
     }
 
-    public OpenApiDocsInfoRenderer append(String content) {
+    public InfoBuilder append(String content) {
         descriptionBuilder.append(content).append("\n");
         return this;
     }
 
-    protected static class OpenApiDocsInfoTable {
-        private final OpenApiDocsInfoRenderer renderer;
+    public static class OpenApiDocsInfoTable {
+        private final InfoBuilder renderer;
         private final List<String> headers = new ArrayList<>();
         private final List<List<String>> rows = new ArrayList<>();
 
-        public OpenApiDocsInfoTable(OpenApiDocsInfoRenderer renderer) {
+        public OpenApiDocsInfoTable(InfoBuilder renderer) {
             this.renderer = renderer;
         }
 
@@ -57,7 +58,7 @@ public class OpenApiDocsInfoRenderer {
             rows.add(Arrays.asList(columns));
         }
 
-        OpenApiDocsInfoRenderer endTable() {
+        InfoBuilder endTable() {
             StringBuilder tableBuilder = new StringBuilder();
 
             // Add headers
@@ -77,7 +78,7 @@ public class OpenApiDocsInfoRenderer {
         }
     }
 
-    protected static class OpenApiDocsInfoTableHeader {
+    public static class OpenApiDocsInfoTableHeader {
         private final OpenApiDocsInfoTable table;
 
         public OpenApiDocsInfoTableHeader(OpenApiDocsInfoTable table) {
@@ -90,7 +91,7 @@ public class OpenApiDocsInfoRenderer {
 
         public OpenApiDocsInfoTableRow row(String... columns) {
             if (columns.length != table.headers.size()) {
-                throw new IllegalArgumentException("Number of columns must match number of headers");
+                throw new MismatchedColumnCountException();
             }
             table.addRow(columns);
             return row();
@@ -100,7 +101,7 @@ public class OpenApiDocsInfoRenderer {
         public final OpenApiDocsInfoTableRow rows(List<String[]> rows) {
             for (String[] row : rows) {
                 if (row.length != table.headers.size()) {
-                    throw new IllegalArgumentException("Number of columns must match number of headers");
+                    throw new MismatchedColumnCountException();
                 }
                 row(row);
             }
@@ -108,7 +109,7 @@ public class OpenApiDocsInfoRenderer {
         }
     }
 
-    protected static class OpenApiDocsInfoTableRow {
+    public static class OpenApiDocsInfoTableRow {
         private final OpenApiDocsInfoTable table;
 
         public OpenApiDocsInfoTableRow(OpenApiDocsInfoTable table) {
@@ -117,13 +118,13 @@ public class OpenApiDocsInfoRenderer {
 
         public OpenApiDocsInfoTableRow row(String... columns) {
             if (columns.length != table.headers.size()) {
-                throw new IllegalArgumentException("Number of columns must match number of headers");
+                throw new MismatchedColumnCountException();
             }
             table.addRow(columns);
             return this;
         }
 
-        public OpenApiDocsInfoRenderer endTable() {
+        public InfoBuilder endTable() {
             return table.endTable();
         }
     }

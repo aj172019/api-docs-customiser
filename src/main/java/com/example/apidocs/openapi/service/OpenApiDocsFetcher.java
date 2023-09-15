@@ -1,7 +1,7 @@
-package com.example.apidocs.service;
+package com.example.apidocs.openapi.service;
 
-import com.example.apidocs.config.MsaProperties.Domain;
-import com.example.apidocs.exception.OpenApiDocsNetworkException;
+import com.example.apidocs.config.MsaPlayProperties.Domain;
+import com.example.apidocs.openapi.exception.OpenApiDocsNetworkException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -19,7 +19,7 @@ public class OpenApiDocsFetcher {
         try {
             return restTemplate.getForObject(endpoint, String.class);
         } catch (Exception e) {
-            throw new OpenApiDocsNetworkException("Failed to fetch OpenAPI YAML", e);
+            throw new OpenApiDocsNetworkException("Failed to fetch OpenAPI YAML");
         }
     }
 }

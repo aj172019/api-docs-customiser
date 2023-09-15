@@ -1,6 +1,6 @@
-package com.example.apidocs.controller;
+package com.example.apidocs.openapi.controller;
 
-import com.example.apidocs.service.OpenApiDocsService;
+import com.example.apidocs.openapi.service.OpenApiDocsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

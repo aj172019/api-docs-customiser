@@ -1,4 +1,4 @@
-package com.example.apidocs.service;
+package com.example.apidocs.openapi.utils;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

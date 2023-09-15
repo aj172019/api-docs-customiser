@@ -1,4 +1,4 @@
-package com.example.apidocs.service.validator;
+package com.example.apidocs.openapi.service.validator;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;

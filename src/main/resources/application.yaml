@@ -1,23 +1,51 @@
 server:
   port: 8081
+  address: 127.0.0.1
+
 springdoc:
   swagger-ui:
     url: /openapi.json
-msa:
+msa-play:
   domains:
     - name: order
       host: localhost:8080
       https: false
       api-docs-path: /rest-controller.yaml
-      validator: com.example.apidocs.service.validator.OpenApiDocsNoneValidator
+      validator: com.example.apidocs.openapi.service.validator.OpenApiDocsNoneValidator
     - name: delivery
       host: localhost:8080
       https: false
       api-docs-path: /dely/rest-controller.yaml
-      validator: com.example.apidocs.service.validator.OpenApiDocsDefaultValidator
+      validator: com.example.apidocs.openapi.service.validator.OpenApiDocsDefaultValidator
     - name: product
       host: localhost:8080
       https: false
       api-docs-path: /feign-client.yaml
-      validator: com.example.apidocs.service.validator.OpenApiDocsDefaultValidator
+      validator: com.example.apidocs.openapi.service.validator.OpenApiDocsDefaultValidator
   validate: false
+# h2
+spring:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        trace: false
+        web-allow-others: false
+  datasource:
+    url: jdbc:h2:mem:openapi
+    username: sa
+    password: 1111
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.H2Dialect
+    generate-ddl: true
+
